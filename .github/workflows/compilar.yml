@@ -1,0 +1,39 @@
+name: Compilar TFS Windows (CMake)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+    - name: Clonar Codigo
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Configurar vcpkg Integrado
+      run: |
+        cd C:\
+        git clone https://github.com
+        cd vcpkg
+        .\bootstrap-vcpkg.bat
+        .\vcpkg integrate install
+
+    - name: Instalar Dependencias via vcpkg
+      run: |
+        C:\vcpkg\vcpkg.exe install --triplet x64-windows boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-locale boost-beast boost-json luajit libmariadb pugixml openssl fmt zlib
+
+    - name: Configurar Projeto com CMake (Forçar x64)
+      run: |
+        cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -A x64 -DCMAKE_GENERATOR_PLATFORM=x64
+
+    - name: Compilar Executavel (Build)
+      run: |
+        cmake --build build --config Release
+
+    - name: Salvar Executavel Pronto
+      uses: actions/upload-artifact@v4
+      with:
+        name: TFS-860-Pronto
+        path: build/Release/theforgottenserver.exe
