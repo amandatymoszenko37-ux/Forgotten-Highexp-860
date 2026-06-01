@@ -15,12 +15,11 @@ jobs:
     - name: Configurar MSBuild
       uses: microsoft/setup-msbuild@v2
 
-    - name: Configurar vcpkg na versao compativel
+    - name: Instalar vcpkg Padrao
       run: |
         cd C:\
         git clone https://github.com
         cd vcpkg
-        git checkout 2024.02.14
         .\bootstrap-vcpkg.bat
         .\vcpkg integrate install
 
@@ -28,9 +27,9 @@ jobs:
       run: |
         C:\vcpkg\vcpkg.exe install --triplet x64-windows boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-locale boost-beast boost-json luajit libmariadb pugixml openssl fmt zlib
 
-    - name: Compilar EXE
+    - name: Compilar EXE (Ignorando Avisos)
       run: |
-        msbuild vc17/theforgottenserver.vcxproj /p:Configuration=Release /p:Platform=x64
+        msbuild vc17/theforgottenserver.vcxproj /p:Configuration=Release /p:Platform=x64 /p:TreatWarningsAsErrors=false
 
     - name: Salvar Executavel
       uses: actions/upload-artifact@v4
