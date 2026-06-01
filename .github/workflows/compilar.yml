@@ -15,11 +15,12 @@ jobs:
     - name: Configurar MSBuild
       uses: microsoft/setup-msbuild@v2
 
-    - name: Configurar vcpkg
+    - name: Configurar vcpkg na versao compativel
       run: |
         cd C:\
         git clone https://github.com
         cd vcpkg
+        git checkout 2024.02.14
         .\bootstrap-vcpkg.bat
         .\vcpkg integrate install
 
