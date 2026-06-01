@@ -1,4 +1,4 @@
-name: Compilar TFS Windows
+name: Compilar TFS Windows (CMake)
 
 on:
   workflow_dispatch:
@@ -12,10 +12,7 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Configurar MSBuild
-      uses: microsoft/setup-msbuild@v2
-
-    - name: Instalar vcpkg Padrao
+    - name: Configurar vcpkg Integrado
       run: |
         cd C:\
         git clone https://github.com
@@ -23,16 +20,20 @@ jobs:
         .\bootstrap-vcpkg.bat
         .\vcpkg integrate install
 
-    - name: Instalar Dependencias
+    - name: Instalar Dependencias via vcpkg
       run: |
         C:\vcpkg\vcpkg.exe install --triplet x64-windows boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-locale boost-beast boost-json luajit libmariadb pugixml openssl fmt zlib
 
-    - name: Compilar EXE (Sem Travar)
+    - name: Configurar Projeto com CMake
       run: |
-        msbuild vc17/theforgottenserver.vcxproj /p:Configuration=Release /p:Platform=x64 /p:TreatWarningsAsErrors=false
+        cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -A x64
 
-    - name: Salvar Executavel
+    - name: Compilar Executavel (Build)
+      run: |
+        cmake --build build --config Release
+
+    - name: Salvar Executavel Pronto
       uses: actions/upload-artifact@v4
       with:
         name: TFS-860-Pronto
-        path: vc17/x64/Release/theforgottenserver.exe
+        path: build/Release/theforgottenserver.exe
