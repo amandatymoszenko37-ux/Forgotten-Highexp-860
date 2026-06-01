@@ -27,7 +27,7 @@ jobs:
       run: |
         C:\vcpkg\vcpkg.exe install --triplet x64-windows boost-iostreams boost-asio boost-system boost-variant boost-lockfree boost-locale boost-beast boost-json luajit libmariadb pugixml openssl fmt zlib
 
-    - name: Compilar EXE (Ignorando Avisos)
+    - name: Compilar EXE (Sem Travar)
       run: |
         msbuild vc17/theforgottenserver.vcxproj /p:Configuration=Release /p:Platform=x64 /p:TreatWarningsAsErrors=false
 
